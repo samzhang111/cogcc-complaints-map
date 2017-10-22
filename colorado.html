@@ -6,13 +6,16 @@
   fill: #ccc;
   stroke: #000;
 }
+.circle {
+  position: absolute;
+  z-index: -1;
+}
 
 </style>
 
 <body>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="https://d3js.org/d3-geo.v1.min.js"></script>
-
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 
 <script>
@@ -23,36 +26,41 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-var projection = d3.geo.mercator().center([-105.631120, 38.858588]).translate([width/2, height/2]).scale(width * 3);
+var layer1 = svg.append("g").attr("layer", "base");
+var layer2 = svg.append("g").attr("layer", "well_complaints");
+
+var projection = d3.geo.mercator().center([-105.631120, 38.858588]).translate([width/2, height/2]).scale(width * 5);
 var path = d3.geoPath().projection(projection);
 
 var coordinates = [];
 var well_complaints = d3.csv('http://localhost:8000/complaint_wells.csv', function(error, data) {
 if (error) throw error;
 for (var i = 0; i < data.length; i++) {
-  if (data[i].latitude !== "" || data[i].longitude != "") {
-    coordinates.push([data[i].latitude, data[i].longitude])
+  if (data[i].latitude && data[i].longitude) {
+    coordinates.push([data[i].longitude, data[i].latitude])
   }
 }
+
 d3.json("https://raw.githubusercontent.com/kthotav/TopoJSON-Maps/master/usa/usa-states/colorado/colorado-counties.json", function(error, colo) {
   if(error) {
     console.error(error);
   }
 
-  svg.selectAll("append")
+  layer1.selectAll("append")
 	  .data(topojson.feature(colo, colo.objects['colorado-counties']).features)
 	  .enter()
 	  .append("path")
 	  .attr("class", "counties")
 	  .attr("d", path);
 });
-console.log(parseInt(coordinates[0][0]) + 960)
-svg.selectAll("path")
+
+layer2.selectAll("path")
   .data(coordinates)
   .enter()
   .append("circle")
-  .attr("cx", function(d) { return d[0] })
-  .attr("cy", function(d) { return d[1] })
+  .attr("class", "circle")
+  .attr("cx", function(d) { return projection(d)[0] })
+  .attr("cy", function(d) { return projection(d)[1] })
   .attr("r", "3px")
   .attr("fill", "teal");
 });
