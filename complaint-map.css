@@ -1,0 +1,19 @@
+.counties {
+  fill: #ccc;
+  stroke: #000;
+  opacity: 0.2;
+}
+.circle {
+  opacity: 0.5;
+  position: absolute;
+  z-index: -1;
+}
+
+.complaints {
+  margin-left: 200px;
+  width: 500px;
+}
+
+.complaint-date {
+  margin-bottom: 1rem;
+}
