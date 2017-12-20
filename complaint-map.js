@@ -21,6 +21,9 @@ function loadMap() {
   const width = 960, height = 500;
   const projection = d3.geo.mercator().center([-105.631120, 38.858588]).translate([width/2, height/2]).scale(width * 5);
 
+  const issueCategoryContainer = d3.select("body")
+    .append('div')
+    .attr("class", "issue-categories");
   const svg = d3.select("body")
     .append("svg")
     .attr("width", width)
@@ -35,17 +38,19 @@ function loadMap() {
     .append("div")
     .attr("class", "complaint-text")
     .text("Highlight a node to read the complaints");
-  const issueCategoryContainer = d3.select("body")
-    .append('div')
-    .attr("class", "issue-categories");
+
 
   loadBaseMap();
 
   const wellsLayer = svg.append("g")
     .attr("layer", "well_complaints");
+  const categoryHeader = issueCategoryContainer
+    .append("h4")
+    .attr("class", "label")
+    .html('Sort By Complaint Type' + '<br />');
   const categorySelector = issueCategoryContainer
     .append('select')
-    .attr('class', 'select')
+    .attr('class', 'select');
   const dateScale = d3.time.scale.utc();
 
   d3.csv('./complaint_wells.csv', function(error, data) {
@@ -67,7 +72,6 @@ function loadMap() {
         }
 
         const projected = projection([data[i].longitude, data[i].latitude]);
-
         // When 'Issue Category' is a number, add to 'OTHER' category
         if (/\d/.test(data[i]["Issue Category"])) {
           data[i]["Issue Category"] = 'OTHER';
@@ -88,14 +92,13 @@ function loadMap() {
           })
         }
       }
-
       // If issue category does not already exist add to issue categories array
       if(issue_categories.indexOf(data[i]["Issue Category"]) === -1) {
         issue_categories.push(data[i]["Issue Category"]);
         issue_categories.sort();
       }
-
     }
+    issue_categories.push("VIEW ALL");
 
     dateScale.domain([minDate, maxDate])
       .interpolate(d3.interpolateHcl)
@@ -110,13 +113,21 @@ function loadMap() {
         .enter()
         .append('option')
         .text(function(d) {
-          return d;
+          if (!/\d/.test(d)) {
+            return d;
+          }
         });
+
+      // remove extra blank option
+      d3.selectAll('select')[0][0].options[0].remove();
 
       // on click, filter mapped location to category
       d3.select(".select")
         .on("change", function(d) {
           var selectedValue = d3.select(this).property('value');
+          if (selectedValue == "VIEW ALL") {
+            reloadMap();
+          }
           loadFilteredMap(selectedValue);
         })
 
@@ -147,6 +158,13 @@ function loadMap() {
             complaintDateContainer.text(d.date.calendar());
             complaintTextContainer.text(d.complaint);
           });
+      }
+
+      function reloadMap() {
+        d3.select("svg").remove();
+        d3.select(".complaints").remove();
+        d3.select(".issue-categories").remove();
+        loadMap();
       }
 
   });
