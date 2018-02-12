@@ -10,10 +10,22 @@
 }
 
 .complaints {
-  margin-left: 200px;
+  margin-left: 300px;
   width: 500px;
 }
 
 .complaint-date {
   margin-bottom: 1rem;
+}
+
+.issue-categories {
+  float: left;
+  position: relative;
+  z-index: 1;
+}
+
+svg {
+  margin-left: -150px;
+  position: relative;
+  z-index: 0;
 }
