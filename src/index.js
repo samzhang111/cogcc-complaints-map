@@ -1,8 +1,14 @@
+import * as d3 from "d3";
+import { geoMercator, geoPath } from "d3-geo";
+import * as colorbrewer from "colorbrewer";
+import * as topojson from "topojson";
+import * as moment from "moment";
+
 
 function loadMap() {
   function loadBaseMap() {
     const mapLayer = svg.append("g").attr("layer", "base");
-    const path = d3.geoPath().projection(projection);
+    const path = geoPath().projection(projection);
 
     d3.json("https://raw.githubusercontent.com/kthotav/TopoJSON-Maps/master/usa/usa-states/colorado/colorado-counties.json", function(error, colo) {
       if(error) {
@@ -19,7 +25,7 @@ function loadMap() {
   }
 
   const width = 960, height = 500;
-  const projection = d3.geo.mercator().center([-105.631120, 38.858588]).translate([width/2, height/2]).scale(width * 5);
+  const projection = geoMercator().center([-105.631120, 38.858588]).translate([width/2, height/2]).scale(width * 5);
 
   const issueCategoryContainer = d3.select("body")
     .append('div')

@@ -1,0 +1,19 @@
+{
+  "name": "cogcc-complaints-map",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:samzhang111/cogcc-complaints-map",
+  "author": "samzhang111 <shimian.zhang@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack src/index.js dist/assets/bundle.js"
+  },
+  "dependencies": {
+    "colorbrewer": "v1",
+    "d3": "v3",
+    "d3-geo": "v1",
+    "moment": "2.19.2",
+    "topojson": "v1",
+    "webpack": "^3.11.0"
+  }
+}
