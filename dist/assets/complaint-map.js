@@ -53,7 +53,7 @@ function loadMap() {
     .attr('class', 'select');
   const dateScale = d3.time.scale.utc();
 
-  d3.csv('./complaint_wells.csv', function(error, data) {
+  d3.csv('/assets/complaint_wells.csv', function(error, data) {
     if (error) throw error;
     let coordinates = [];
     let unmapped_complaints = [];
